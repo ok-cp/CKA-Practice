@@ -398,6 +398,64 @@ k apply -f daemon.yaml
 
 ## Static Pods
 
+### What is the path of the directory holding the static pod definition files?
+
+<p>
+  
+```bash
+cat /var/lib/kubelet/config.yaml | grep staticPodPath:
+```
+
+</p>
+
+
+### Create a static pod named static-busybox that uses the busybox image and the command sleep 1000
+
+Name: static-busybox
+Image: busybox
+
+<p>
+  
+```bash
+k run static-busybox --image=busybox --generator=run-pod/v1 --dry-run -o yaml --command -- sleep 1000 > static.yaml
+mv static.yaml /etc/kubernetes/manifests/
+
+k get po
+NAME                    READY   STATUS    RESTARTS   AGE
+static-busybox-master   1/1     Running   0          18s
+```
+
+</p>
+
+
+### We just created a new static pod named static-greenbox. Find it and delete it.
+
+<p>
+  
+```bash
+master $ k get po  -o wide
+NAME                     READY   STATUS    RESTARTS   AGE   IP          NODE     NOMINATED NODE   READINESS GATES
+static-greenbox-node01   1/1     Running   0          65s   10.44.0.1   node01   <none>           <none>
+
+master $ k get nodes -o wide
+NAME     STATUS   ROLES    AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+master   Ready    master   10m   v1.16.0   172.17.0.55   <none>        Ubuntu 16.04.6 LTS   4.4.0-166-generic   docker://18.9.7
+node01   Ready    <none>   10m   v1.16.0   172.17.0.58   <none>        Ubuntu 16.04.6 LTS   4.4.0-166-generic   docker://18.9.7
+
+master $ ssh 172.17.0.58
+
+node01 $ cat /var/lib/kubelet/config.yaml  | grep static
+staticPodPath: /etc/just-to-mess-with-you
+node01 $ rm /etc/just-to-mess-with-you/greenbox.yaml
+Connection to 172.17.0.58 closed.
+
+master $ k get po
+No resources found in default namespace.
+```
+
+</p>
+
+
 ## Multiple Schedulers
 
 
