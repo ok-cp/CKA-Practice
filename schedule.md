@@ -458,4 +458,61 @@ No resources found in default namespace.
 
 ## Multiple Schedulers
 
+### Deploy an additional scheduler to the cluster following the given specification. Use the manifest file used by kubeadm tool. Use a different port than the one used by the current one.
 
+Namespace: kube-system
+Name: my-scheduler
+Status: Running
+Custom Scheduler Name
+
+cp /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/manifests/my-scheduler.yaml
+vi /etc/kubernetes/manifests/my-scheduler.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: my-scheduler # Change
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --bind-address=127.0.0.1
+    - --kubeconfig=/etc/kubernetes/scheduler.conf
+    - --leader-elect=true
+    - --scheduler-name=my-scheduler # Add
+    - --port=10282    # Add 
+    - --secure-port=0  # Add
+    image: k8s.gcr.io/kube-scheduler:v1.16.0
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 8
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10282  # change
+        scheme: HTTP
+
+
+
+### A POD definition file is given. Use it to create a POD with the new custom scheduler. File is located at /root/nginx-pod.yaml
+
+Name: nginx
+Uses custom scheduler
+Status: Running
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  schedulerName: my-scheduler # Add
+  containers:
+  -  image: nginx
+     name: nginx
+     
+k get po 
