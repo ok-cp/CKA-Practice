@@ -83,6 +83,11 @@ kubectl edit po redis
 
 </p>
 
+### Deploy a redis pod using the redis:alpine image with the labels set to tier=db.
+
+kubectl run redis  --image=redis:alpine --generator=run-pod/v1 -l tier=db
+
+
 ## Replicaset
 
 ### How many ReplicaSets exist on the system? in the current(default) namespace
@@ -174,3 +179,144 @@ kubectl run httpd-frontend --image=httpd:2.4-alpine --replicas=3
 
 </p>
 
+### Create a deployment named webapp using the image kodekloud/webapp-color with 3 replicas. Try to use imperative commands only. Do not create definition files.
+<p>
+
+```bash
+kubectl run webapp --image=kodekloud/webapp-color --replicas=3
+```
+
+</p>
+
+## Namespaces
+
+### How many Namespaces exist on the system?
+
+<p>
+
+```bash
+kubect get ns
+```
+
+</p>
+
+
+### How many pods exist in the 'research' namespace?
+<p>
+
+```bash
+kubectl get po -n research
+```
+
+</p>
+
+### Create a POD in the 'finance' namespace.
+Name: redis
+Image Name: redis
+
+<p>
+
+```bash
+kubectl run redis --image=redis --generator=run-pod/v1 -n finance
+```
+
+</p>
+
+
+### Which namespace has the 'blue' pod in it?
+
+<p>
+
+```bash
+kubectl get pods --all-namespaces
+```
+
+</p>
+
+
+### What DNS name should the Blue application use to access the database 'db-service' in its own namespace - 'marketing'.
+
+<p>
+
+```bash
+db-service
+```
+
+</p>
+
+### What DNS name should the Blue application use to access the database 'db-service' in the 'dev' namespace
+
+<p>
+
+```bash
+db-service.dev
+```
+
+</p>
+
+
+## Service
+
+### How many Services exist on the system? in the current(default) namespace
+What is the type of the default 'kubernetes' service?
+
+<p>
+
+```bash
+kubectl get svc
+```
+
+</p>
+
+### What is the 'targetPort' configured on the 'kubernetes' service?
+How many Endpoints are attached on the 'kubernetes' service?
+
+<p>
+
+```bash
+kubectl describe svc kubernetes
+```
+
+</p>
+
+### How many labels are configured on the 'kubernetes' service?
+
+<p>
+
+```bash
+kubectl get svc kubernetes --show-labels
+```
+
+</p>
+
+
+
+
+### Create a new service to access the web application using the service-definition-1.yaml file
+Name: webapp-service; Type: NodePort; targetPort: 8080; port: 8080; nodePort: 30080; selector: simple-webapp
+
+### Create a service redis-service to expose the redis application within the cluster on port 6379.
+
+<p>
+
+```bash
+kubectl expose pod redis  --name=redis-service --port=6379
+```
+
+</p>
+
+### Expose the webapp as service webapp-service application on port 30082 on the nodes on the cluster. The web application listens on port 8080
+Name: webapp-service
+Type: NodePort
+Endpoints: 3
+Port: 8080
+NodePort: 30082
+
+<p>
+
+```bash
+kubectl expose deploy webapp --name=webapp-service --type=NodePort --port=8080
+kubectl edit svc webapp-service
+```
+
+</p>
