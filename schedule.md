@@ -27,7 +27,8 @@ spec:
  ```
 
 </p>
-###  How many PODs are in the 'finance' business unit ('bu')?
+
+### How many PODs are in the 'finance' business unit ('bu')?
 <p>
   
 ```bash
@@ -35,6 +36,7 @@ kubectl get po -l bu=finance
 ```
 
 </p>
+
 ### How many objects are in the 'prod' environment including PODs, ReplicaSets and any other objects?
 <p>
   
