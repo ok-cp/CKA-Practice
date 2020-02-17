@@ -80,3 +80,34 @@ kubectl edit po redis
 ```
 
 </p>
+
+### How many ReplicaSets exist on the system? in the current(default) namespace
+<p>
+How many PODs are DESIRED in the new-replica-set?
+How many PODs are READY in the new-replica-set?
+Why do you think the PODs are not ready?
+
+```bash
+kubectl get replicaset
+```
+
+</p>
+
+### What is the image used to create the pods in the new-replica-set?
+<p>
+
+```bash
+kubectl describe replicaset
+```
+
+</p>
+
+### Delete the two newly created ReplicaSets - replicaset-1 and replicaset-2
+<p>
+
+```bash
+kubectl delete replicaset replicaset-1
+kubectl delete replicaset replicaset-2
+```
+
+</p>
