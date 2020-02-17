@@ -1,5 +1,7 @@
 # Core Concepts 19%
 
+
+## Pods
 ### How many PODs exist on the system? in the current(default) namespace
 <p>
   
@@ -81,6 +83,8 @@ kubectl edit po redis
 
 </p>
 
+## Replicaset
+
 ### How many ReplicaSets exist on the system? in the current(default) namespace
 <p>
 How many PODs are DESIRED in the new-replica-set?
@@ -111,3 +115,62 @@ kubectl delete replicaset replicaset-2
 ```
 
 </p>
+
+### Fix the original replica set 'new-replica-set' to use the correct 'busybox' image. Either delete and re-create the ReplicaSet or Update the existing ReplicSet and then delete all PODs, so new ones with the correct image will be created.
+
+<p>
+
+```bash
+
+# Scale the ReplicaSet to 5 PODs. Use 'kubectl scale' command or edit the replicaset using 'kubectl edit replicaset'
+# Now scale the ReplicaSet down to 2 PODs. Use 'kubectl scale' command or edit the replicaset using 'kubectl edit replicaset'
+
+
+kubectl edit replicaset new-replica-set
+kubectl scale replicaset new-replica-set --replicas=2
+
+```
+
+</p>
+
+## Deployments
+
+### How many Deployments exist on the system? in the current(default) namespace
+<p>
+
+```bash
+Out of all the existing PODs, how many are ready?
+kubectl get deploy
+```
+
+</p>
+
+### What is the image used to create the pods in the new deployment?
+<p>
+
+```bash
+kubectl describe deploy frontend-deployment
+```
+
+</p>
+
+
+### Create a new Deployment using the 'deployment-definition-1.yaml' file located at /root/ .There is an issue with the file, so try to fix it.
+<p>
+
+```bash
+kubectl apply -f /root/deployment-definition-1.yaml
+```
+
+</p>
+
+### Create a new Deployment with the below attributes using your own deployment definition file
+#### Name: httpd-frontend; Replicas: 3; Image: httpd:2.4-alpine
+<p>
+
+```bash
+kubectl run httpd-frontend --image=httpd:2.4-alpine --replicas=3
+```
+
+</p>
+
