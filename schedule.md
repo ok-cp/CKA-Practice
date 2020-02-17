@@ -271,10 +271,6 @@ kubectl describe pod rabbit
 
 </p>
 
-<p>
-  
-```bash
-
 ### The elephant runs a process that consume 15Mi of memory. Increase the limit of the elephant pod to 20Mi. Delete and recreate the pod if required. Do not modify anything other than the required fields.
 Pod Name: elephant
 Image Name: polinux/stress
@@ -292,7 +288,6 @@ k get po elephant -o yaml > e.yaml
 <p>
   
 ```bash
-
 spec:
   containers:
   - args:
@@ -334,6 +329,72 @@ k apply -f e.yaml
 
 
 ## DaemonSets
+
+### How many DaemonSets are created in the cluster in all namespaces? Check all namespaces
+
+<p>
+  
+```bash
+kubectl get daemonsets --all-namespaces
+```
+
+</p>
+
+### What is the image used by the POD deployed by the weave-net DaemonSet?
+
+<p>
+  
+```bash
+kubectl describe daemonset weave-net --namespace=kube-system
+```
+
+</p>
+
+### Deploy a DaemonSet for FluentD Logging. Use the given specifications.
+Name: elasticsearch
+Namespace: kube-system
+Image: k8s.gcr.io/fluentd-elasticsearch:1.20
+
+<p>
+  
+```bash
+vi daemon.yaml
+```
+
+</p>
+
+<p>
+  
+```bash
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: elasticsearch
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: elasticsearch
+  template:
+    metadata:
+      labels:
+        name: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: k8s.gcr.io/fluentd-elasticsearch:1.20
+```
+
+</p>
+
+<p>
+  
+```bash
+k apply -f daemon.yaml
+```
+
+</p>
+
 
 ## Static Pods
 
