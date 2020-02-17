@@ -249,7 +249,7 @@ db-service
 <p>
 
 ```bash
-db-service.dev
+db-service.dev.svc.cluster.local
 ```
 
 </p>
