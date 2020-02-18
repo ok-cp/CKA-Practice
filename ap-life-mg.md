@@ -1,82 +1,87 @@
 # Application Lifecycle Management 8%
 
-### How many PODs exist on the system? in the current(default) namespace
+### Inspect the deployment and identify the current strategy
+
 <p>
   
 ```bash
-kubectl get pods
+k describe deploy frontend
 ```
 
 </p>
 
-### Create a new pod with the NGINX image
+### Let us try that. Upgrade the application by setting the image on the deployment to 'kodekloud/webapp-color:v2'. Do not delete and re-create the deployment. Only set the new image name for the existing deployment.
 <p>
 
 ```bash
-kubectl run nginx --image=nginx --generator=run-pod/v1
+k edit deploy frontend
 ```
 
 </p>
 
-### How many pods are created now? Note: We have created a few more pods. So please check again.
+### Up to how many PODs can be down for upgrade at a time. Consider the current strategy settings and number of PODs - 4
 <p>
 
 ```bash
-kubectl run nginx --image=nginx --generator=run-pod/v1
+k describe deploy frontend | grep RollingUpdateStrategy
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+
+1
 ```
 
 </p>
 
-### What is the image used to create the new pods? You must look at one of the new pods in detail to figure this out
+### Change the deployment strategy to 'Recreate'. Do not delete and re-create the deployment. Only update the strategy type for the existing deployment.
+Deployment Name: frontend
+Deployment Image: kodekloud/webapp-color:v2
+Strategy: Recreate
+
 <p>
 
 ```bash
-kubectl describe pod newpod-<id>
+k edit deploy frontend
+
+  selector:
+    matchLabels:
+      name: webapp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: webapp
 ```
 
 </p>
 
-### Which nodes are these pods placed on? You must look at all the pods in detail to figure this out
+### What is the command used to run the pod 'ubuntu-sleeper'?
 <p>
 
 ```bash
-kubectl get po -o wide
-```
-
-</p>
-
-### Why do you think the container 'agentx' in pod 'webapp' is in error? Try to figure it out from the events section of the pod
-<p>
-
-```bash
-kubectl describe pod webapp
-```
-
-</p>
-
-### Delete the 'webapp' Pod. Once deleted, wait for the pod to fully terminate.
-<p>
-
-```bash
-kubectl delete pod webapp
-```
-
-</p>
-
-### Create a new pod with the name 'redis' and with the image 'redis123' Use a pod-definition YAML file. And yes the image name is wrong!
-<p>
-
-```bash
-kubectl run redis --image=redis123 --generator=run-pod/v1
-```
-
-</p>
-
-### Now fix the image on the pod to 'redis'. Update the pod-definition file and use 'kubectl apply' command or use 'kubectl edit pod redis' command.
-<p>
-
-```bash
-kubectl edit po redis
+k describe po ubuntu-sleeper
+Name:         ubuntu-sleeper
+Namespace:    default
+Priority:     0
+Node:         node01/172.17.0.71
+Start Time:   Tue, 18 Feb 2020 02:34:09 +0000
+Labels:       <none>
+Annotations:  <none>
+Status:       Pending
+IP:
+IPs:          <none>
+Containers:
+  ubuntu:
+    Container ID:
+    Image:         ubuntu
+    Image ID:
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      4800
+      
+      
 ```
 
 </p>
