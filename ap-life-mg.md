@@ -103,3 +103,238 @@ spec:
     command:
       - "sleep"
       - "5000"
+
+
+### Create a pod with the given specifications. By default it displays a 'blue' background. Set the given command line arguments to change it to 'green'
+
+Pod Name: webapp-green
+Image: kodekloud/webapp-color
+Command line arguments: --color=green
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp-green
+  labels:
+      name: webapp-green
+spec:
+  containers:
+  - name: simple-webapp
+    image: kodekloud/webapp-color
+    args: ["--color", "green"]
+    
+    
+### How many ConfigMaps exist in the environment?
+
+kubectl get configmaps
+
+
+### Identify the database host from the config map 'db-config'
+
+Run the command 'kubectl describe configmaps' and look for DB_HOST option
+
+
+### create configmap
+configmap name: webapp-config-map
+data : APP_COLOR=darkblue
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webapp-config-map
+  namespace: default
+data:
+  APP_COLOR: darkblue
+
+
+### Update the environment variable on the POD use the newly created ConfigMap. Note: Delete and recreate the POD. Only make the necessary changes. Do not modify the name of the Pod.
+
+Pod Name: webapp-color
+EnvFrom: webapp-config-map
+
+spec:
+  containers:
+  - name: webapp-color
+    env:
+    - name: APP_COLOR
+      valueFrom:
+        configMapKeyRef:
+           name: webapp-config-map
+           key: APP_COLOR
+    image: kodekloud/webapp-color
+    imagePullPolicy: Always
+    
+
+## Secrets
+
+### How many Secrets exist on the system? in the current(default) namespace
+
+k get secret
+
+### How many secrets are defined in the 'default-token' secret?
+
+Run the command 'kubectl get secrets' and look at the DATA field
+
+### What is the type of the 'default-token' secret?
+
+kubectl describe secret
+
+
+### The reason the application is failed is because we have not created the secrets yet. Create a new Secret named 'db-secret' with the data given(on the right). You may follow any one of the methods discussed in lecture to create the secret.
+
+Secret Name: db-secret
+Secret 1: DB_Host=sql01
+Secret 2: DB_User=root
+Secret 3: DB_Password=password123
+
+kubectl create secret generic db-secret --from-literal=DB_Host=sql01 --from-literal=DB_User=root --from-literal=DB_Password=password123
+
+
+### Configure webapp-pod to load environment variables from the newly created secret. Delete and recreate the pod if required.
+Pod name: webapp-pod
+Image name: kodekloud/simple-webapp-mysql
+Env From: Secret=db-secret
+
+master $ k get po webapp-pod -o yaml > webapp-pod.yaml
+master $ k delete -f webapp-pod.yaml
+pod "webapp-pod" deleted
+master $ vi webapp-pod.yaml
+
+spec:
+  containers:
+  - image: kodekloud/simple-webapp-mysql
+    imagePullPolicy: Always
+    name: webapp
+    env:
+      - name: DB_Host
+        valueFrom:
+          secretKeyRef:
+            name: db-secret
+            key: DB_Host
+      - name: DB_User
+        valueFrom:
+          secretKeyRef:
+            name: db-secret
+            key: DB_User
+      - name: DB_Password
+        valueFrom:
+          secretKeyRef:
+            name: db-secret
+            key: DB_Password
+
+## Multi Container
+
+###  Create a multi-container pod with 2 containers. Use the spec given on the right.
+
+Name: yellow
+Container 1 Name: lemon
+Container 1 Image: busybox
+Container 2 Name: gold
+Container 2 Image: redis
+
+k run yellow --image=busybox --generator=run-pod/v1 --dry-run -o yaml > multi.yaml
+master $ vi multi.yaml
+master $ k apply -f multi.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: yellow
+  name: yellow
+spec:
+  containers:
+  - image: busybox
+    name: lemon
+  - image: redis
+    name: gold
+
+### The 'app'lication outputs logs to the file /log/app.log. View the logs and try to identify the user having issues with Login. Inspect the log file inside the pod
+
+k exec app -it -n elastic-stack cat /log/app.log
+
+### Edit the pod to add a sidecar container to send logs to ElasticSearch. Mount the log volume to the sidecar container. Only add a new container. Do not modify anything else. Use the spec on the right.
+
+Name: app
+Container Name: sidecar
+Container Image: kodekloud/filebeat-configured
+Volume Mount: log-volume
+Mount Path: /var/log/event-simulator/
+Existing Container Name: app
+Existing Container Image: kodekloud/event-simulator
+
+
+master $ k get po -n elastic-stack  -o yaml  > app.yaml
+master $ vi app.yaml
+
+  spec:
+    containers:
+    - image: kodekloud/event-simulator
+      imagePullPolicy: Always
+      name: app
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /log
+        name: log-volume
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-fx8mv
+        readOnly: true
+    - image: kodekloud/filebeat-configured
+      imagePullPolicy: Always
+      name: sidecar
+      volumeMounts:
+      - mountPath: /var/log/event-simulator/
+        name: log-volume
+
+master $ k delete po app -n elastic-stack
+pod "app" deleted
+master $ k apply -f app.yaml
+
+## Init Container
+
+### Update the pod red to use an initContainer that uses the busybox image and sleeps for 20 seconds. Delete and re-create the pod if necessary. But make sure no other configurations change.
+Pod: red
+initContainer Configured Correctly
+
+k get po red -o yaml > red.yaml
+vi red.yaml
+
+spec:
+  initContainers:
+  - name: initc
+    image: busybox
+    command: ['sleep','20']
+  containers:
+  - command:
+    - sh
+    - -c
+    - echo The app is running! && sleep 3600
+    image: busybox:1.28
+    imagePullPolicy: IfNotPresent
+    name: red-container
+
+k delete -f red.yaml
+pod "red" deleted
+k apply -f red.yaml
+
+### A new application orange is deployed. There is something wrong with it. Identify and fix the issue. Once fixed, wait for the application to run before checking solution.
+
+<p>
+
+```bash
+kubectl describe po orange
+
+kubectl get po orange -o yaml > orange.yaml
+
+vi orange.yaml
+# fixed issue
+
+kubectl delete -f orange.yaml
+kubectl apply -f orange.yaml
+```
+
+</p>
+
