@@ -85,3 +85,21 @@ Containers:
 ```
 
 </p>
+
+
+### Create a pod with the ubuntu image to run a container to sleep for 5000 seconds. Modify the file ubuntu-sleeper-2.yaml. Note: Only make the necessary changes. Do not modify the name.
+
+Pod Name: ubuntu-sleeper-2
+Command: sleep 5000
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-sleeper-2
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu
+    command:
+      - "sleep"
+      - "5000"
