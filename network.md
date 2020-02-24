@@ -1,34 +1,47 @@
 # Networking 11%
 
 ### What is the IP Range configured for the services within the cluster?
+<p>
+
+```bash
 ps -aux | grep kube-api
 -service-cluster-ip-range=10.96.0.0/12 
 
 
 ### How many kube-proxy pods are deployed in this cluster
+<p>
 
+```bash
  kubectl get pods -n kube-system
  
 ### What type of proxy is the kube-proxy configured to use?
+<p>
 
+```bash
 k logs kube-proxy-jj2xn   -n kube-system
 W0218 16:51:34.951442       1 server_others.go:287] Flag proxy-mode="" unknown, assuming iptables proxy
 
 
 ### How does this Kubernetes cluster ensure that a kube-proxy pod runs on all nodes in the cluster?
+<p>
 
+```bash
 using daemonsets
 
 
 ## CoreDNS
 
 ### What is the name of the service created for accessing CoreDNS?
+<p>
 
+```bash
  kubectl get service -n kube-system
  
  
 ### Where is the configuration file located for configuring the CoreDNS service?
- 
+ <p>
+
+```bash
 master $  kubectl exec coredns-78fcdf6894-6z6x7  -n kube-system ps
 PID   USER     TIME   COMMAND
     1 root       0:01 /coredns -conf /etc/coredns/Corefile
@@ -36,11 +49,16 @@ PID   USER     TIME   COMMAND
 
 
 ### What is the name of the ConfigMap object created for Corefile?
+<p>
+
+```bash
 kubectl get configmap -n kube-system
 
 
 ### What is the root domain/zone configured for this kubernetes cluster?
+<p>
 
+```bash
 master $  kubectl describe configmap coredns -n kube-system
 Name:         coredns
 Namespace:    kube-system
@@ -84,7 +102,9 @@ service/web-service    ClusterIP   10.97.236.27   <none>        80/TCP         5
 
 
 ### We just deployed a web server - webapp - that accesses a database mysql - server. However the web server is failing to connect to the database server. Troubleshoot and fix the issue.
+<p>
 
+```bash
 Web Server: webapp
 Uses the right DB_Host name
 
@@ -130,7 +150,9 @@ payroll       service/web-service      ClusterIP   10.100.58.167   <none>       
         image: mmumshad/simple-webapp-mysql
         
 ### From the hr pod nslookup the mysql service and redirect the output to a file /root/nslookup.out
+<p>
 
+```bash
 kubectl exec hr -it -- nslookup mysql.payroll
 
 master $ kubectl exec hr -it -- nslookup mysql.payroll > /root/nslookup.out
@@ -145,7 +167,9 @@ Address: 10.98.50.60
 ## Ingress
 
 ### What is the Host configured on the ingress-resource?
+<p>
 
+```bash
 $ kubectl describe ingress --namespace app-space
 Name:             ingress-wear-watch
 Namespace:        app-space
@@ -166,6 +190,9 @@ Events:
   Normal  UPDATE  79s   nginx-ingress-controller  Ingress app-space/ingress-wear-watch
 
 ### You are requested to change the URLs at which the applications are made available.
+<p>
+
+```bash
 Ingress: ingress-wear-watch
 Path: /stream
 Backend Service: video-service
@@ -204,6 +231,9 @@ items:
           path: /eat
 
 ### You are requested to add a new path to your ingress to make the food delivery application available to your customers.
+<p>
+
+```bash
 Ingress: ingress-wear-watch
 Path: /eat
 Backend Service: food-service
@@ -228,7 +258,9 @@ Backend Service Port: 8080
           
 ### You are requested to make the new application available at /pay.
 Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working. Look into annotations: rewrite-target as well.
+<p>
 
+```bash
 Ingress Created
 Path: /pay
 Configure correct backend service
@@ -260,7 +292,9 @@ spec:
 
 
 ### Let us now create a service to make Ingress available to external users.
+<p>
 
+```bash
 Name: ingress
 Type: NodePort
 Port: 80
