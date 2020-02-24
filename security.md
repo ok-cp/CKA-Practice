@@ -10,6 +10,7 @@ openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text
 ```
 
 </p>
+
 ### What is the Common Name (CN) configured on the ETCD Server certificate?
 <p>
 
@@ -18,6 +19,7 @@ Run the command openssl x509 -in /etc/kubernetes/pki/etcd/server.crt -text and l
 ```
 
 </p>
+
 ### How long, from the issued date, is the Root CA Certificate valid for?
 <p>
 
@@ -26,6 +28,7 @@ openssl x509 -in /etc/kubernetes/pki/ca.crt -text
 ```
 
 </p>
+
 ### Kubectl suddenly stops responding to your commands. Check it out! Someone recently modified the /etc/kubernetes/manifests/etcd.yaml file
 <p>
 
@@ -34,6 +37,7 @@ Inspect the --cert-file option in the manifests file.
 ```
 
 </p>
+
 ### The kube-api server stopped again! Check it out. Inspect the kube-api server logs and identify the root cause and fix the issue.
 <p>
 
@@ -42,6 +46,7 @@ ETCD has its own CA. The right CA must be used for the ETCD-CA file in /etc/kube
 ```
 
 </p>
+
 ### The kube-api server stops responding one day when it tries to connect to ETCD server.
 <p>
 
@@ -482,6 +487,9 @@ dark-blue-app   1/1       Running   0          3m
 
 ### Grant the dev-user permissions to create deployments in the blue namespace. Remember to add both groups "apps" and "extensions"
 
+<p>
+
+```bash
 master $ k create role deploy-role --resource=deployments --verb=create -n blue
 role.rbac.authorization.k8s.io/deploy-blue created
 master $ k create rolebinding dev-user-deploy-binding --role=deploy-role --user=dev-user -n blue
