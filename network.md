@@ -6,28 +6,36 @@
 ```bash
 ps -aux | grep kube-api
 -service-cluster-ip-range=10.96.0.0/12 
+```
 
+</p>
 
 ### How many kube-proxy pods are deployed in this cluster
 <p>
 
 ```bash
  kubectl get pods -n kube-system
- 
+ ```
+
+</p>
 ### What type of proxy is the kube-proxy configured to use?
 <p>
 
 ```bash
 k logs kube-proxy-jj2xn   -n kube-system
 W0218 16:51:34.951442       1 server_others.go:287] Flag proxy-mode="" unknown, assuming iptables proxy
+```
 
+</p>
 
 ### How does this Kubernetes cluster ensure that a kube-proxy pod runs on all nodes in the cluster?
 <p>
 
 ```bash
 using daemonsets
+```
 
+</p>
 
 ## CoreDNS
 
@@ -36,7 +44,9 @@ using daemonsets
 
 ```bash
  kubectl get service -n kube-system
- 
+ ```
+
+</p>
  
 ### Where is the configuration file located for configuring the CoreDNS service?
  <p>
@@ -46,14 +56,18 @@ master $  kubectl exec coredns-78fcdf6894-6z6x7  -n kube-system ps
 PID   USER     TIME   COMMAND
     1 root       0:01 /coredns -conf /etc/coredns/Corefile
    20 root       0:00 ps
+```
 
+</p>
 
 ### What is the name of the ConfigMap object created for Corefile?
 <p>
 
 ```bash
 kubectl get configmap -n kube-system
+```
 
+</p>
 
 ### What is the root domain/zone configured for this kubernetes cluster?
 <p>
@@ -84,10 +98,15 @@ Corefile:
 }
 
 Events:  <none>
-  
+```
+
+</p>
+
 ### What name can be used to access the hr web server from the test Application?
 You can execute a curl command on the test pod to test. Alternatively, the test Application also has a UI. Access it using the tab at the top of your terminal named"test-app"
+<p>
 
+```bash
 master $ k get po,svc
 NAME                    READY     STATUS    RESTARTS   AGE
 pod/hr                  1/1       Running   0          5m
@@ -99,7 +118,9 @@ NAME                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        A
 service/kubernetes     ClusterIP   10.96.0.1      <none>        443/TCP        20m
 service/test-service   NodePort    10.96.83.156   <none>        80:30080/TCP   5m
 service/web-service    ClusterIP   10.97.236.27   <none>        80/TCP         5m
+```
 
+</p>
 
 ### We just deployed a web server - webapp - that accesses a database mysql - server. However the web server is failing to connect to the database server. Troubleshoot and fix the issue.
 <p>
@@ -148,7 +169,10 @@ payroll       service/web-service      ClusterIP   10.100.58.167   <none>       
         - name: DB_Password
           value: paswrd
         image: mmumshad/simple-webapp-mysql
-        
+```
+
+</p>
+
 ### From the hr pod nslookup the mysql service and redirect the output to a file /root/nslookup.out
 <p>
 
@@ -162,7 +186,9 @@ Address:        10.96.0.10#53
 
 Name:   mysql.payroll.svc.nextgen.cloud
 Address: 10.98.50.60
+```
 
+</p>
 
 ## Ingress
 
@@ -188,6 +214,9 @@ Events:
   ----    ------  ----  ----                      -------
   Normal  CREATE  79s   nginx-ingress-controller  Ingress app-space/ingress-wear-watch
   Normal  UPDATE  79s   nginx-ingress-controller  Ingress app-space/ingress-wear-watch
+```
+
+</p>
 
 ### You are requested to change the URLs at which the applications are made available.
 <p>
@@ -229,7 +258,9 @@ items:
             serviceName: food-service
             servicePort: 8080
           path: /eat
+```
 
+</p>
 ### You are requested to add a new path to your ingress to make the food delivery application available to your customers.
 <p>
 
@@ -255,7 +286,9 @@ Backend Service Port: 8080
             serviceName: food-service
             servicePort: 8080
           path: /eat
-          
+ ```
+
+</p>         
 ### You are requested to make the new application available at /pay.
 Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working. Look into annotations: rewrite-target as well.
 <p>
@@ -289,7 +322,9 @@ spec:
         backend:
           serviceName: pay-service
           servicePort: 8282
+```
 
+</p>
 
 ### Let us now create a service to make Ingress available to external users.
 <p>
@@ -335,7 +370,9 @@ spec:
         backend:
           serviceName: video-service
           servicePort: 8080
-          
+ ```
+
+</p>         
           
           
 
