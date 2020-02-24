@@ -353,8 +353,9 @@ Configure correct backend service for /watch
 Configure correct backend port for /wear service
 Configure correct backend port for /watch service
 
+<p>
 
----
+```bash
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
