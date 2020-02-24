@@ -3,27 +3,39 @@
 ## TLS
 
 ### What is the Common Name (CN) configured on the Kube API Server Certificate?
+<p>
 
+```bash
 openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text
 
 ### What is the Common Name (CN) configured on the ETCD Server certificate?
+<p>
 
+```bash
 Run the command openssl x509 -in /etc/kubernetes/pki/etcd/server.crt -text and look for Subject CN.
 
 ### How long, from the issued date, is the Root CA Certificate valid for?
+<p>
 
+```bash
 openssl x509 -in /etc/kubernetes/pki/ca.crt -text
 
 ### Kubectl suddenly stops responding to your commands. Check it out! Someone recently modified the /etc/kubernetes/manifests/etcd.yaml file
+<p>
 
+```bash
 Inspect the --cert-file option in the manifests file.
 
 ### The kube-api server stopped again! Check it out. Inspect the kube-api server logs and identify the root cause and fix the issue.
+<p>
 
+```bash
 ETCD has its own CA. The right CA must be used for the ETCD-CA file in /etc/kubernetes/manifests/kube-apiserver.yaml. View answer at /var/answers/kube-apiserver.yaml
 
 ### The kube-api server stops responding one day when it tries to connect to ETCD server.
+<p>
 
+```bash
 openssl x509 -req -in /etc/kubernetes/pki/apiserver-etcd-client.csr -CA /etc/kubernetes/pki/etcd/ca.crt -CAkey /etc/kubernetes/pki/etcd/ca.key -CAcreateserial -out /etc/kubernetes/pki/apiserver-etcd-client.crt
 
 
@@ -32,6 +44,9 @@ openssl x509 -req -in /etc/kubernetes/pki/apiserver-etcd-client.csr -CA /etc/kub
 CSR akshay created
 Right CSR is used
 
+<p>
+
+```bash
 master $ ls
 akshay.csr  akshay.key 
 
@@ -48,7 +63,10 @@ spec:
   
   
 ### What is the Condition of the newly created Certificate Signing Request object?
- 
+
+<p>
+
+```bash
  kubectl get csr
 
 NAME                                                   AGE       REQUESTOR                 CONDITION
@@ -58,12 +76,18 @@ node-csr-ixMy6kbEKBIf-40OuBJh0xCDgn8VVFkpWSJig-TO1OQ   11m       system:bootstra
 
 ### Who requested the csr-* request?
 
+<p>
+
+```bash
 master node
 
  
 ### Approve the CSR Request
   CSR Approved
 
+<p>
+
+```bash
 master $  kubectl certificate approve akshay
 certificatesigningrequest.certificates.k8s.io/akshay approved
   
@@ -71,6 +95,9 @@ certificatesigningrequest.certificates.k8s.io/akshay approved
 
 ### You are not aware of a request coming in. What groups is this CSR requesting access to?
 
+<p>
+
+```bash
 $ kubectl get csr agent-smith -o yaml
 
 
@@ -98,11 +125,17 @@ status: {}
 ### That doesn't look very right. Reject that request.
 CSR agent-smith deny
 
+<p>
+
+```bash
 $ kubectl certificate deny agent-smith
 
 ### Let's get rid of it. Delete the new CSR object
 CSR agent-smith deleted
 
+<p>
+
+```bash
 $ kubectl delete csr agent-smith
 
 ## kubeconfig
@@ -110,15 +143,24 @@ $ kubectl delete csr agent-smith
 ### Where is the default kubeconfig file located in the current environment?
 Find the current home directory by looking at the HOME environment variable
 
+<p>
+
+```bash
 master $ ls /root/.kube/config
 /root/.kube/config
 
 ### How many Users are defined in the default kubeconfig file?
 
+<p>
+
+```bash
 Run the command 'kubectl config view' and count the number of users
 
 ### A new kubeconfig file named 'my-kube-config' is created. It is placed in the /root directory. How many clusters are defined in the kubectl file?
 
+<p>
+
+```bash
 Run the command 'kubectl config view --kubeconfig my-kube-config'
 
 apiVersion: v1
@@ -175,10 +217,16 @@ users:
 
 ### I would like to use the dev-user to access test-cluster-1. Set the current context to the right one so I can do that.
 
+<p>
+
+```bash
 Run the command kubectl config --kubeconfig=/root/my-kube-config use-context research
 
 ### We don't want to have to specify the kubeconfig file option on each command. Make the my-kube-config file the default kubeconfig.
 
+<p>
+
+```bash
 Replace the contents in the default kubeconfig file with the content from my-kube-config file.
 
 master $ cd /root/
@@ -207,6 +255,9 @@ cache  config  config.org  http-cache
 ### With the current-context set to research, we are trying to access the cluster. However something seems to be wrong. Identify and fix the issue. 
 Try running the kubectl get pods command and look for the error. All users certificates are stored at /etc/kubernetes/pki/users
 
+<p>
+
+```bash
 $ k get po
 error: unable to read client-cert /etc/kubernetes/pki/users/dev-user/developer-user.crt for dev-user due to open /etc/kubernetes/pki/users/dev-user/developer-user.crt: no such file or directory
 
@@ -225,6 +276,9 @@ users:
  
  ### Inspect the environment and identify the authorization modes configured on the cluster.
  
+ <p>
+
+```bash
  $ kubectl describe pod kube-apiserver-master -n kube-system
  
      Command:
@@ -234,11 +288,17 @@ users:
 
 ### How many roles exist in the default namespace?
 
+<p>
+
+```bash
 kubectl get roles
 
 
 ### What are the resources the weave-net role in the kube-system namespce is given access to?
 
+<p>
+
+```bash
 $ kubectl describe role weave-net -n kube-system
 
 Name:         weave-net
@@ -256,9 +316,12 @@ PolicyRule:
   configmaps  []                 []              [create]
   configmaps  []                 [weave-net]     [get update]
   
-  
-  ### Which account is the weave-net role assigned to it?
-  
+
+### Which account is the weave-net role assigned to it?
+
+<p>
+
+```bash  
   $ kubectl describe rolebinding weave-net -n kube-system
   
   Name:         weave-net
@@ -282,6 +345,9 @@ Subjects:
 ### A user dev-user is created. User's details have been added to the kubeconfig file. Inspect the permissions granted to the user. Check if the user can list pods in the default namespace.
 Use the --as dev-user option with kubectl to run commands as the dev-user
 
+<p>
+
+```bash
 $ kubectl get pods --as dev-user
 
 ### Create the necessary roles and role bindings required for the dev-user to create, list and delete pods in the default namespace.
@@ -300,6 +366,10 @@ rolebinding.rbac.authorization.k8s.io/dev-user-binding created
 
 ### The dev-user is trying to get details about the dark-blue-app pod in the blue namespace. Investigate and fix the issue.
 
+
+<p>
+
+```bash
 master $ k get po dark-blue-app -n blue --as dev-user
 No resources found.
 Error from server (Forbidden): pods "dark-blue-app" is forbidden: User "dev-user" cannot get pods in the namespace "blue"
@@ -386,16 +456,25 @@ roleRef:
 
 ### How many ClusterRoles do you see defined in the cluster?
 
+<p>
+
+```bash
 kubectl get clusterroles --no-headers | wc -l
 
 
 ### How many ClusterRoleBindings exist on the cluster?
 
+<p>
+
+```bash
 kubectl get clusterrolebindings --no-headers | wc -l 
 
 
 ### What user/groups are the cluster-admin role bound to?
 
+<p>
+
+```bash
 master $ kubectl describe clusterrolebinding cluster-admin
 Name:         cluster-admin
 Labels:       kubernetes.io/bootstrapping=rbac-defaults
@@ -434,7 +513,10 @@ PolicyRule:
              
              
  ### A new user michelle joined the team. She will be focusing on the nodes in the cluster. Create the required ClusterRoles and ClusterRoleBindings so she gets access to the nodes.
- 
+
+<p>
+
+```bash
 master $ kubectl create clusterrole node-admin --verb=get,create,delete,list,watch --resource=nodes
 clusterrole.rbac.authorization.k8s.io/node-admin created
 master $ kubectl create clusterrolebinding node-cluster-admin-binding --clusterrole=node-admin --user=michelle
@@ -474,7 +556,9 @@ ClusterRoleBinding: michelle-storage-admin
 ClusterRoleBinding Subject: michelle
 ClusterRoleBinding Role: storage-admin
 
+<p>
 
+```bash
 master $ kubectl create clusterrole storage-admin --verb=get,create,delete,list,watch --resource=persistentvolumes,storageclasses
 clusterrole.rbac.authorization.k8s.io/storage-admin created
 master $ kubectl create clusterrolebinding michelle-storage-admin --clusterrole=storage-admin --user=michelle
@@ -513,6 +597,9 @@ roleRef:
 
 ### We decided to use a modified version of the application from an internal private registry. Update the image of the deployment to use a new image from myprivateregistry.com:5000
 
+<p>
+
+```bash
 Use the kubectl edit deployment command to edit the image name to myprivateregistry.com:5000/nginx:alpine
 
 
@@ -526,6 +613,9 @@ Secret: private-reg-cred
 Secret Type: docker-registry
 Secret Data
 
+<p>
+
+```bash
 kubectl create secret docker-registry private-reg-cred --docker-username=dock_user --docker-password=dock_password --docker-server=myprivateregistry.com:5000 --docker-email=dock_user@myprivateregistry.com
 
 
@@ -533,6 +623,10 @@ kubectl create secret docker-registry private-reg-cred --docker-username=dock_us
 Image Pull Secret: private-reg-cred
 
 Edit deployment using kubectl edit deploy web command and add imagePullSecrets section. Use private-reg-cred
+
+<p>
+
+```bash
 
     spec:
       containers:
@@ -551,12 +645,19 @@ Edit deployment using kubectl edit deploy web command and add imagePullSecrets s
 
 ### What is the user used to execute the sleep process within the 'ubuntu-sleeper' pod? in the current(default) namespace
 
+<p>
+
+```bash
 Run the command 'kubectl exec ubuntu-sleeper whoami' and count the number of pods.
 
 ### Edit the pod 'ubuntu-sleeper' to run the sleep process with user ID 1010. Note: Only make the necessary changes. Do not modify the name or image of the pod.
 Pod Name: ubuntu-sleeper
 Image Name: ubuntu
 SecurityContext: User 1010
+
+<p>
+
+```bash
 
   containers:
   - command:
@@ -575,6 +676,10 @@ SecurityContext: User 1010
 ### A Pod definition file named 'multi-pod.yaml' is given. With what user are the processes in the 'web' container started?
 The pod is created with multiple containers and security contexts defined at the POD and Container level
 
+
+<p>
+
+```bash
 apiVersion: v1
 kind: Pod
 metadata:
@@ -600,6 +705,10 @@ Pod Name: ubuntu-sleeper
 Image Name: ubuntu
 SecurityContext: Capability SYS_TIME
 
+<p>
+
+```bash
+
 spec:
   containers:
   - command:
@@ -616,12 +725,18 @@ spec:
 
 ### How many network policies do you see in the environment? We have deployed few web applications, services and network policies. Inspect the environment.
 
+<p>
+
+```bash
 master $ k get netpol
 NAME             POD-SELECTOR   AGE
 payroll-policy   name=payroll   39s
 
 ### What type of traffic is this Network Policy configured to handle?
 
+<p>
+
+```bash
 master $ kubectl describe networkpolicy
 Name:         payroll-policy
 Namespace:    default
@@ -648,6 +763,9 @@ Payroll Port: 8080
 Egress Allow: mysql
 MYSQL Port: 3306
 
+<p>
+
+```bash
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
