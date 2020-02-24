@@ -261,6 +261,7 @@ items:
 ```
 
 </p>
+
 ### You are requested to add a new path to your ingress to make the food delivery application available to your customers.
 <p>
 
@@ -289,6 +290,7 @@ Backend Service Port: 8080
  ```
 
 </p>         
+
 ### You are requested to make the new application available at /pay.
 Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working. Look into annotations: rewrite-target as well.
 <p>
@@ -338,6 +340,9 @@ NodePort: 30080
 Use the right selector
 
 kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress -n ingress-space --dry-run -o yaml >ingress.yaml
+```
+
+</p>
 
 ### Create the ingress resource to make the applications available at /wear and /watch on the Ingress service.
 Ingress Created
