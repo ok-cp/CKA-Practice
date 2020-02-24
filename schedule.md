@@ -465,6 +465,10 @@ Name: my-scheduler
 Status: Running
 Custom Scheduler Name
 
+
+<p>
+
+```bash
 cp /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/manifests/my-scheduler.yaml
 vi /etc/kubernetes/manifests/my-scheduler.yaml
 
@@ -496,11 +500,16 @@ spec:
         path: /healthz
         port: 10282  # change
         scheme: HTTP
+```
+
+</p>
 
 
 
 ### A POD definition file is given. Use it to create a POD with the new custom scheduler. File is located at /root/nginx-pod.yaml
+<p>
 
+```bash
 Name: nginx
 Uses custom scheduler
 Status: Running
@@ -516,3 +525,6 @@ spec:
      name: nginx
      
 k get po 
+```
+
+</p>
