@@ -1,7 +1,9 @@
 # Storage 7%
 
 ### Configure a volume to store these logs at /var/log/webapp on the host. Use the spec given on the right.
+<p>
 
+```bash
 Name: webapp
 Image Name: kodekloud/event-simulator
 Volume HostPath: /var/log/webapp
@@ -26,13 +28,18 @@ spec:
     hostPath:
       path: /var/log/webapp
       type: Directory
-      
+```
+
+</p>      
 ### Create a 'Persistent Volume' with the given specification.
 Volume Name: pv-log
 Storage: 100Mi
 Access modes: ReadWriteMany
 Host Path: /pv/log
 
+<p>
+
+```bash
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -44,10 +51,16 @@ spec:
     - ReadWriteMany
   hostPath:
     path: /pv/log
+```
+
+</p>      
  
  
 ### Let us claim some of that storage for our application. Create a 'Persistent Volume Claim' with the given specification.
- 
+
+<p>
+
+```bash 
 Volume Name: claim-log-1
 Storage Request: 50Mi
 Access modes: ReadWriteMany
@@ -62,10 +75,16 @@ spec:
   resources:
     requests:
       storage: 50Mi
+```
+
+</p>      
 
 
 ### Update the webapp pod to use the persistent volume claim as its storage. Replace hostPath configured earlier with the newly created PersistentVolumeClaim
 
+<p>
+
+```bash
 Name: webapp
 Image Name: kodekloud/event-simulator
 Volume: PersistentVolumeClaim=claim-log-1
@@ -91,3 +110,6 @@ spec:
   - name: log-volume
     persistentVolumeClaim:
       claimName: claim-log-1
+```
+
+</p>      
