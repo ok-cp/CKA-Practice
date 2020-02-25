@@ -1,41 +1,41 @@
 # Networking 11%
 
+Service 생성/관리, Service DNS, Pod DNS에 대한 이해가 필요하다.
+
 ### What is the IP Range configured for the services within the cluster?
 <p>
 
 ```bash
 ps -aux | grep kube-api
--service-cluster-ip-range=10.96.0.0/12 
+$ -service-cluster-ip-range=10.96.0.0/12 
 ```
 
 </p>
+</br>
 
 ### How many kube-proxy pods are deployed in this cluster
 <p>
 
 ```bash
- kubectl get pods -n kube-system
+$ kubectl get pods -n kube-system
  ```
 
 </p>
+</br>
+
 ### What type of proxy is the kube-proxy configured to use?
 <p>
 
 ```bash
-k logs kube-proxy-jj2xn   -n kube-system
+$ kubectl logs kube-proxy-jj2xn   -n kube-system
 W0218 16:51:34.951442       1 server_others.go:287] Flag proxy-mode="" unknown, assuming iptables proxy
 ```
 
 </p>
+</br>
+</br>
+</br>
 
-### How does this Kubernetes cluster ensure that a kube-proxy pod runs on all nodes in the cluster?
-<p>
-
-```bash
-using daemonsets
-```
-
-</p>
 
 ## CoreDNS
 
@@ -47,7 +47,9 @@ using daemonsets
  ```
 
 </p>
- 
+</br>
+
+
 ### Where is the configuration file located for configuring the CoreDNS service?
  <p>
 
@@ -59,6 +61,7 @@ PID   USER     TIME   COMMAND
 ```
 
 </p>
+</br>
 
 ### What is the name of the ConfigMap object created for Corefile?
 <p>
@@ -68,6 +71,7 @@ kubectl get configmap -n kube-system
 ```
 
 </p>
+</br>
 
 ### What is the root domain/zone configured for this kubernetes cluster?
 <p>
@@ -101,13 +105,16 @@ Events:  <none>
 ```
 
 </p>
+</br>
 
 ### What name can be used to access the hr web server from the test Application?
-You can execute a curl command on the test pod to test. Alternatively, the test Application also has a UI. Access it using the tab at the top of your terminal named"test-app"
+You can execute a curl command on the test pod to test. Alternatively, the test Application also has a UI.   
+Access it using the tab at the top of your terminal named"test-app"   
+
 <p>
 
 ```bash
-master $ k get po,svc
+master $ kubectl get po,svc
 NAME                    READY     STATUS    RESTARTS   AGE
 pod/hr                  1/1       Running   0          5m
 pod/simple-webapp-1     1/1       Running   0          5m
@@ -121,15 +128,16 @@ service/web-service    ClusterIP   10.97.236.27   <none>        80/TCP         5
 ```
 
 </p>
+</br>
 
 ### We just deployed a web server - webapp - that accesses a database mysql - server. However the web server is failing to connect to the database server. Troubleshoot and fix the issue.
+* Web Server: webapp
+* Uses the right DB_Host name
+
 <p>
 
 ```bash
-Web Server: webapp
-Uses the right DB_Host name
-
-master $ k get po,svc --all-namespaces
+master $ kubectl get po,svc --all-namespaces
 NAMESPACE     NAME                                 READY     STATUS    RESTARTS   AGE
 default       pod/hr                               1/1       Running   0          9m
 default       pod/simple-webapp-1                  1/1       Running   0          8m
@@ -172,12 +180,13 @@ payroll       service/web-service      ClusterIP   10.100.58.167   <none>       
 ```
 
 </p>
+</br>
 
 ### From the hr pod nslookup the mysql service and redirect the output to a file /root/nslookup.out
 <p>
 
 ```bash
-kubectl exec hr -it -- nslookup mysql.payroll
+$ kubectl exec hr -it -- nslookup mysql.payroll
 
 master $ kubectl exec hr -it -- nslookup mysql.payroll > /root/nslookup.out
 
@@ -189,6 +198,9 @@ Address: 10.98.50.60
 ```
 
 </p>
+</br>
+</br>
+</br>
 
 ## Ingress
 
@@ -217,16 +229,19 @@ Events:
 ```
 
 </p>
+</br>
 
 ### You are requested to change the URLs at which the applications are made available.
+
+* Ingress: ingress-wear-watch
+* Path: /stream
+* Backend Service: video-service
+* Backend Service Port: 8080
+
+
 <p>
 
 ```bash
-Ingress: ingress-wear-watch
-Path: /stream
-Backend Service: video-service
-Backend Service Port: 8080
-
 apiVersion: v1
 items:
 - apiVersion: extensions/v1beta1
@@ -261,16 +276,17 @@ items:
 ```
 
 </p>
+</br>
 
 ### You are requested to add a new path to your ingress to make the food delivery application available to your customers.
+* Ingress: ingress-wear-watch
+* Path: /eat
+* Backend Service: food-service
+* Backend Service Port: 8080
+
 <p>
 
 ```bash
-Ingress: ingress-wear-watch
-Path: /eat
-Backend Service: food-service
-Backend Service Port: 8080
-
   spec:
     rules:
     - http:
@@ -290,19 +306,22 @@ Backend Service Port: 8080
  ```
 
 </p>         
+</br>
 
 ### You are requested to make the new application available at /pay.
-Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working. Look into annotations: rewrite-target as well.
+Identify and implement the best approach to making this application available on the ingress controller and test to make sure its working.   
+Look into annotations: rewrite-target as well.
+
+* Path: /pay
+* Configure correct backend service
+* Configure correct backend port
+
+
 <p>
 
 ```bash
 Ingress Created
-Path: /pay
-Configure correct backend service
-Configure correct backend port
-
-
-master $ k get po,svc,ingress -n critical-space
+master $ kubectl get po,svc,ingress -n critical-space
 NAME                             READY   STATUS    RESTARTS   AGE
 pod/webapp-pay-5d8c86d5c-sshzh   1/1     Running   0          2m49s
 
@@ -327,31 +346,33 @@ spec:
 ```
 
 </p>
+</br>
 
 ### Let us now create a service to make Ingress available to external users.
+* Name: ingress
+* Type: NodePort
+* Port: 80
+* TargetPort: 80
+* NodePort: 30080
+* Use the right selector
+
 <p>
 
 ```bash
-Name: ingress
-Type: NodePort
-Port: 80
-TargetPort: 80
-NodePort: 30080
-Use the right selector
-
-kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress -n ingress-space --dry-run -o yaml >ingress.yaml
+$ kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress -n ingress-space --dry-run -o yaml >ingress.yaml
 ```
 
 </p>
+</br>
 
 ### Create the ingress resource to make the applications available at /wear and /watch on the Ingress service.
-Ingress Created
-Path: /wear
-Path: /watch
-Configure correct backend service for /wear
-Configure correct backend service for /watch
-Configure correct backend port for /wear service
-Configure correct backend port for /watch service
+* Ingress Created
+* Path: /wear
+* Path: /watch
+* Configure correct backend service for /wear
+* Configure correct backend service for /watch
+* Configure correct backend port for /wear service
+* Configure correct backend port for /watch service
 
 <p>
 

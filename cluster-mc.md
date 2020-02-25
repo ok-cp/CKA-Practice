@@ -1,9 +1,11 @@
 # Cluster Maintenance 11%
 
+Cluster 관리 방법 drain/uncordon/cordon 사용 방법 이해, Etcd Backup 방법 이해가 필요하다.
+
 ### We need to take node01 out for maintenance. Empty the node of all applications and mark it unschedulable.
 
-Node node01 Unschedulable   
-Pods evicted from node01   
+* Node node01 Unschedulable   
+* Pods evicted from node01   
 
 <p>
 
@@ -12,10 +14,11 @@ $ kubectl drain node01 --ignore-daemonsets
 ```
 
 </p>
+</br>
 
 
 ### The maintenance tasks have been completed. Configure the node to be schedulable again.
-Node01 is Schedulable   
+* Node01 is Schedulable   
 
 <p>
 
@@ -24,11 +27,12 @@ $ kubectl uncordon node01 (--force)
 ```
 
 </p>
+</br>
 
 ### Node03 has our critical applications. We do not want to schedule any more apps on node03. Mark node03 as unschedulable but do not remove any apps currently running on it .
  
-Node03 Unschedulable    
-Node03 has apps   
+* Node03 Unschedulable    
+* Node03 has apps   
 
 <p>
 
@@ -48,10 +52,11 @@ $ kubectl cordon node03
 <p>
 
 ```bash
-kubeadm upgrade plan
+$ kubeadm upgrade plan
 ```
 
 </p>
+</br>
 
 
 ### We will be upgrading the master node first. Drain the master node of workloads and mark it UnSchedulable
@@ -65,11 +70,12 @@ kubectl drain master --ignore-daemonsets
 ```
 
 </p>
+</br>
  
  ### Upgrade the master components to v1.12.0. Upgrade kubeadm tool, then master components, and finally the kubelet. Practice referring to the kubernetes documentation page. Note: While upgrading kubelet, if you hit dependency issue while running the apt-get upgrade kubelet command, use the apt install kubelet=1.12.0-00 command instead
  
-Master Upgraded to v1.12.0   
-Master Kubelet Upgraded to v1.12.0   
+* Master Upgraded to v1.12.0   
+* Master Kubelet Upgraded to v1.12.0   
 
 <p>
 
@@ -81,11 +87,12 @@ $ apt install kubelet=1.12.0-00
 ```
 
 </p>
+</br>
 
 
 ### Mark the master node as "Schedulable" again
 
-Master Node: Ready & Schedulable    
+* Master Node: Ready & Schedulable    
 <p>
 
 ```bash
@@ -93,9 +100,10 @@ $ kubectl uncordon master
 ```
 
 </p>
+</br>
 
 ### Next is the worker node. Drain the worker node of the workloads and mark it UnSchedulable
-Worker node: Unschedulable
+* Worker node: Unschedulable
 
 <p>
 
@@ -104,6 +112,7 @@ $ kubectl drain node01 --ignore-daemonsets
 ```
 
 </p>
+</br>
 
 
 ### Upgrade the worker node to v1.12.0
@@ -137,9 +146,9 @@ $ kubectl uncordon node01
 
 ## Backup  
 ### The master nodes in our cluster are planned for a regular maintenance reboot tonight. While we do not anticipate anything to go wrong, we are required to take the necessary backups. Take a snapshot of the ETCD database using the built-in snapshot functionality.
-Store the backup file at location /tmp/snapshot-pre-boot.db    
-Backup ETCD to /tmp/snapshot-pre-boot.db    
-Name: ingress-space    
+* Store the backup file at location /tmp/snapshot-pre-boot.db    
+* Backup ETCD to /tmp/snapshot-pre-boot.db    
+* Name: ingress-space    
 
 <p>
 
@@ -149,6 +158,7 @@ Snapshot saved at /tmp/snapshot-pre-boot.db
 ```
 
 </p>
+</br>
 
 ### Luckily we took a backup. Restore the original state of the cluster using the backup file.
  

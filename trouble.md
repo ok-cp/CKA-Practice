@@ -1,5 +1,7 @@
 # Troubleshooting 10%
 
+애플리케이션 트러블슈팅 문제는 Pod/Service가 정상적으로 연결되어있는지 또는 Env 의 값이 알맞은지를 확인한다. Label과 오타를 확인한다.
+
 
 ## Application Failure
 
@@ -8,9 +10,10 @@
 <p>
 
 ```bash
-master $ k get all
+$ kubectl get all
 NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   116s
+
 master $ k get all -n alpha
 NAME                                READY   STATUS    RESTARTS   AGE
 pod/mysql                           1/1     Running   0          64s
@@ -27,15 +30,18 @@ NAME                                      DESIRED   CURRENT   READY   AGE
 replicaset.apps/webapp-mysql-6ff75cc4c8   1         1         1       63s
 
 
-master $ k get svc mysql -n alpha -o yaml > mysql-svc.yaml
-master $ k delete -f mysql-svc.yaml
+$ kubectl get svc mysql -n alpha -o yaml > mysql-svc.yaml
+$ kubectl delete -f mysql-svc.yaml
 service "mysql" deleted
-master $ vi mysql-svc.yaml
-master $ k apply -f mysql-svc.yaml
+
+$ vi mysql-svc.yaml
+$ kubectl apply -f mysql-svc.yaml
 service/mysql-service created
 ```
 
 </p>
+
+</br>
 
 ### [Serivce TargetPort] Troubleshooting Test 2: The same 2 tier application is deployed in the beta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
@@ -43,7 +49,7 @@ service/mysql-service created
 
 
 ```bash
-master $ k get all -n beta
+$ kubectl get all -n beta
 NAME                                READY   STATUS    RESTARTS   AGE
 pod/mysql                           1/1     Running   0          118s
 pod/webapp-mysql-6ff75cc4c8-7x75g   1/1     Running   0          118s
@@ -59,7 +65,7 @@ NAME                                      DESIRED   CURRENT   READY   AGE
 replicaset.apps/webapp-mysql-6ff75cc4c8   1         1         1       118s
 
 
-master $ k describe svc mysql-service   -n beta
+$ kubectl describe svc mysql-service   -n beta
 Name:              mysql-service
 Namespace:         beta
 Labels:            <none>
@@ -76,9 +82,14 @@ Events:            <none>
 
 </p>
 
+</br>
+
 ### [Labels] Troubleshooting Test 3: The same 2 tier application is deployed in the gamma namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
-master $ k get all -n gamma --show-labels
+<p>
+
+```bash
+$ kubectl get all -n gamma --show-labels
 NAME                                READY   STATUS    RESTARTS   AGE     LABELS
 pod/mysql                           1/1     Running   0          8m34s   name=mysql
 pod/webapp-mysql-6ff75cc4c8-76ndn   1/1     Running   0          8m34s   name=webapp-mysql,pod-template-hash=6ff75cc4c8
@@ -109,6 +120,7 @@ Events:            <none>
 
 </p>
 
+</br>
 
 ### [Env] Troubleshooting Test 4: The same 2 tier application is deployed in the delta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
@@ -116,7 +128,7 @@ Events:            <none>
 
 
 ```bash
-master $ k describe deployment.apps/webapp-mysql  -n delta
+$ kubectl describe deployment.apps/webapp-mysql  -n delta
 Name:                   webapp-mysql
 Namespace:              delta
 CreationTimestamp:      Tue, 18 Feb 2020 07:11:19 +0000
@@ -155,13 +167,14 @@ Events:
 
 </p>
 
+</br>
 
 ### Troubleshooting Test 5: The same 2 tier application is deployed in the epsilon namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
 <p>
 
 ```bash
-master $ k describe pod/mysql    -n epsilon
+$ kubectl describe pod/mysql    -n epsilon
 Name:         mysql
 Namespace:    epsilon
 Priority:     0
@@ -215,12 +228,14 @@ Events:
 
 </p>
 
+</br>
+
 ### Troubleshooting Test 6: The same 2 tier application is deployed in the zeta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
 <p>
 
 ```bash
-master $ k get all -n zeta
+$ kubectl get all -n zeta
 NAME                                READY   STATUS    RESTARTS   AGE
 pod/mysql                           1/1     Running   0          71s
 pod/webapp-mysql-76686f9686-zmpn5   1/1     Running   0          70s
@@ -242,7 +257,9 @@ service/web-service edited
 
 </p>
 
-
+</br>
+</br>
+</br>
 
 ## Control Plane Failure
 
@@ -252,7 +269,7 @@ service/web-service edited
 
 
 ```bash
-master $ k get po -n kube-system
+$ kubectl get po -n kube-system
 NAME                             READY   STATUS             RESTARTS   AGE
 coredns-5644d7b6d9-v5td4         1/1     Running            0          6m8s
 coredns-5644d7b6d9-zq7bn         1/1     Running            0          6m8s
@@ -265,7 +282,7 @@ kube-scheduler-master            0/1     CrashLoopBackOff   4          3m2s
 weave-net-k9k8j                  2/2     Running            1          6m8s
 weave-net-m2xml                  2/2     Running            0          5m47s
 
-master $ k describe po kube-scheduler-master -n kube-system
+$ kubectl describe po kube-scheduler-master -n kube-system
 
 Events:
   Type     Reason   Age                   From             Message
@@ -275,7 +292,7 @@ Events:
   Warning  Failed   99s (x5 over 3m17s)   kubelet, master  Error: failed to start container "kube-scheduler": Errorresponse from daemon: OCI runtime create failed: container_linux.go:345: starting container process caused "exec: \"kube-schedulerrrr\": executable file not found in $PATH": unknown
   Warning  BackOff  92s (x10 over 3m16s)  kubelet, master  Back-off restarting failed container
 
-master $ vi /etc/kubernetes/manifests/kube-scheduler.yaml
+$ vi /etc/kubernetes/manifests/kube-scheduler.yaml
 
 apiVersion: v1
 kind: Pod
@@ -296,13 +313,16 @@ spec:
 </p>
 
 
+</br>
+
 ### Even though the depoyment was scaled to 2, the number of PODs does not seem to increase. Investigate and fix the issue.
-Inspect the component responsible for managing deployments and replicasets.
+
+Inspect the component responsible for managing deployments and replicasets.   
 
 <p>
 
 ```bash
-master $ k get po -n kube-system
+$ kubectl get po -n kube-system
 NAME                             READY   STATUS             RESTARTS   AGE
 coredns-5644d7b6d9-v5td4         1/1     Running            0          8m50s
 coredns-5644d7b6d9-zq7bn         1/1     Running            0          8m50s
@@ -315,7 +335,7 @@ kube-scheduler-master            1/1     Running            1          84s
 weave-net-k9k8j                  2/2     Running            1          8m50s
 weave-net-m2xml                  2/2     Running            0          8m29s
 
-master $ k logs kube-controller-manager-master  -n kube-system
+$ kubectl logs kube-controller-manager-master  -n kube-system
 I0219 15:19:15.112199       1 serving.go:319] Generated self-signed cert in-memory
 stat /etc/kubernetes/controller-manager-XXXX.conf: no such file or directory
 
@@ -334,18 +354,18 @@ spec:
     - --controllers=*,bootstrapsigner,tokencleaner
     - --kubeconfig=/etc/kubernetes/controller-manager-XXXX.conf
 ```
-
-
 </p>
 
+</br>
+
 ### Something is wrong with scaling again. We just tried scaling the deployment to 3 replicas. But it's not happening. Investigate and fix the issue
-Fix Issue
-Wait for deployment to actually scale
+* Fix Issue
+* Wait for deployment to actually scale
 
 <p>
 
 ```bash
-master $ k get po
+$ kubectl get po
 NAME                  READY   STATUS    RESTARTS   AGE
 app-f54ccc97b-5clrr   1/1     Running   0          14m
 app-f54ccc97b-rtb7v   1/1     Running   0          3m26s
@@ -354,7 +374,7 @@ NAME   READY   UP-TO-DATE   AVAILABLE   AGE
 app    2/3     2            2           14m
 
 
-master $ k get po -n kube-system
+$ kubectl get po -n kube-system
 NAME                             READY   STATUS             RESTARTS   AGE
 coredns-5644d7b6d9-v5td4         1/1     Running            0          17m
 coredns-5644d7b6d9-zq7bn         1/1     Running            0          17m
@@ -367,7 +387,7 @@ kube-scheduler-master            1/1     Running            1          10m
 weave-net-k9k8j                  2/2     Running            1          17m
 weave-net-m2xml                  2/2     Running            0          17m
 
-master $ k logs kube-controller-manager-master   -n kube-system
+$ kubectl logs kube-controller-manager-master   -n kube-system
 I0219 15:25:37.000364       1 serving.go:319] Generated self-signed cert in-memory
 unable to load client CA file: unable to load client CA file: open /etc/kubernetes/pki/ca.crt: no such file or directory
 
@@ -400,20 +420,25 @@ unable to load client CA file: unable to load client CA file: open /etc/kubernet
 
 </p>
 
+</br>
+</br>
+</br>
+
 ## Worker Node Failure
 
 ### Fix the broken cluster
-Fix node01
+* Fix node01
 
 <p>
 
 ```bash
-master $ k get nodes
+$ kubectl get nodes
 NAME     STATUS     ROLES    AGE    VERSION
 master   Ready      master   115s   v1.16.0
 node01   NotReady   <none>   83s    v1.16.0
-master $ ssh node01
-node01 $ service kubelet status
+
+$ ssh node01
+$ service kubelet status
 ● kubelet.service - kubelet: The Kubernetes Node Agent
    Loaded: loaded (/lib/systemd/system/kubelet.service; enabled; vendor preset: enabled)
   Drop-In: /etc/systemd/system/kubelet.service.d
@@ -427,9 +452,9 @@ Feb 19 15:33:35 node01 systemd[1]: Stopping kubelet: The Kubernetes Node Agent..
 Feb 19 15:33:35 node01 systemd[1]: Stopped kubelet: The Kubernetes Node Agent.
 Warning: Journal has been rotated since unit was started. Log output is incomplete or unava
 
-node01 $ service kubelet start
+$ service kubelet start
 
-master $ k get nodes
+$ kubectl get nodes
 NAME     STATUS   ROLES    AGE     VERSION
 master   Ready    master   2m57s   v1.16.0
 node01   Ready    <none>   2m25s   v1.16.0
@@ -437,16 +462,19 @@ node01   Ready    <none>   2m25s   v1.16.0
 
 </p>
 
+</br>
+
 ### The cluster is broken again. Investigate and fix the issue.
 
 <p>
 
 
 ```bash
-master $ k get nodes
+master $ kubectl get nodes
 NAME     STATUS     ROLES    AGE     VERSION
 master   Ready      master   4m11s   v1.16.0
 node01   NotReady   <none>   3m39s   v1.16.0
+
 master $ !ssh
 ssh node01
 
@@ -494,15 +522,16 @@ cgroupsPerQOS: true
 
 </p>
 
+</br>
 
 ### The cluster is broken again. Investigate and fix the issue.
-Fix Cluster
+* Fix Cluster
 
 <p>
 
 
 ```bash
-master $ k get nodes
+master $ kubectl get nodes
 NAME     STATUS     ROLES    AGE   VERSION
 master   Ready      master   29m   v1.16.0
 node01   NotReady   <none>   28m   v1.16.0
@@ -529,7 +558,7 @@ tcp6       0      0 :::6443                 :::*                    LISTEN      
 tcp6       0      0 172.17.0.25:6443        172.17.0.25:53434       ESTABLISHED 4224/kube-apiserver
 tcp6       0      0 172.17.0.25:6443        172.17.0.26:45916       ESTABLISHED 4224/kube-apiserver
 
-master $ k get nodes
+master $ kubectl get nodes
 NAME     STATUS   ROLES    AGE   VERSION
 master   Ready    master   34m   v1.16.0
 node01   Ready    <none>   33m   v1.16.0
