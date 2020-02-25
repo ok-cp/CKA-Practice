@@ -5,6 +5,9 @@
 
 ### [Service-Name]Troubleshooting Test 1: A simple 2 tier application is deployed in the alpha namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
+<p>
+
+```bash
 master $ k get all
 NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   116s
@@ -30,10 +33,16 @@ service "mysql" deleted
 master $ vi mysql-svc.yaml
 master $ k apply -f mysql-svc.yaml
 service/mysql-service created
+```
 
+</p>
 
 ### [Serivce TargetPort] Troubleshooting Test 2: The same 2 tier application is deployed in the beta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
+<p>
+
+
+```bash
 master $ k get all -n beta
 NAME                                READY   STATUS    RESTARTS   AGE
 pod/mysql                           1/1     Running   0          118s
@@ -63,6 +72,9 @@ TargetPort:        8080/TCP  # port
 Endpoints:         10.44.0.1:8080
 Session Affinity:  None
 Events:            <none>
+```
+
+</p>
 
 ### [Labels] Troubleshooting Test 3: The same 2 tier application is deployed in the gamma namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
@@ -93,9 +105,17 @@ TargetPort:        3306/TCP
 Endpoints:         <none>
 Session Affinity:  None
 Events:            <none>
+```
+
+</p>
+
 
 ### [Env] Troubleshooting Test 4: The same 2 tier application is deployed in the delta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
+<p>
+
+
+```bash
 master $ k describe deployment.apps/webapp-mysql  -n delta
 Name:                   webapp-mysql
 Namespace:              delta
@@ -131,10 +151,17 @@ Events:
   Type    Reason             Age   From                   Message
   ----    ------             ----  ----                   -------
   Normal  ScalingReplicaSet  97s   deployment-controller  Scaled up replica set webapp-mysql-76686f9686 to 1
-  
+```
+
+</p>
+
+
 ### Troubleshooting Test 5: The same 2 tier application is deployed in the epsilon namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
-  
- aster $ k describe pod/mysql    -n epsilon
+
+<p>
+
+```bash
+master $ k describe pod/mysql    -n epsilon
 Name:         mysql
 Namespace:    epsilon
 Priority:     0
@@ -184,10 +211,15 @@ Events:
   Normal  Pulled     2m49s      kubelet, node01    Successfully pulled image "mysql"
   Normal  Created    2m49s      kubelet, node01    Created container mysql
   Normal  Started    2m48s      kubelet, node01    Started container mysql
+```
 
+</p>
 
 ### Troubleshooting Test 6: The same 2 tier application is deployed in the zeta namespace. It must display a green web page on success. Click on the app tab at the top of your terminal to view your application. It is currently failed. Troubleshoot and fix the issue.
 
+<p>
+
+```bash
 master $ k get all -n zeta
 NAME                                READY   STATUS    RESTARTS   AGE
 pod/mysql                           1/1     Running   0          71s
@@ -205,7 +237,10 @@ replicaset.apps/webapp-mysql-76686f9686   1         1         1       70s
 
 master $ k edit service/web-service -n zeta
 service/web-service edited
+```
 
+
+</p>
 
 
 
@@ -213,6 +248,10 @@ service/web-service edited
 
 ### The cluster is broken again. We tried deploying an application but it's not working. Troubleshoot and fix the issue.
 
+<p>
+
+
+```bash
 master $ k get po -n kube-system
 NAME                             READY   STATUS             RESTARTS   AGE
 coredns-5644d7b6d9-v5td4         1/1     Running            0          6m8s
@@ -251,12 +290,18 @@ spec:
   containers:
   - command:
     - kube-schedulerrrr
+```
 
+
+</p>
 
 
 ### Even though the depoyment was scaled to 2, the number of PODs does not seem to increase. Investigate and fix the issue.
 Inspect the component responsible for managing deployments and replicasets.
 
+<p>
+
+```bash
 master $ k get po -n kube-system
 NAME                             READY   STATUS             RESTARTS   AGE
 coredns-5644d7b6d9-v5td4         1/1     Running            0          8m50s
@@ -288,13 +333,18 @@ spec:
     - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
     - --controllers=*,bootstrapsigner,tokencleaner
     - --kubeconfig=/etc/kubernetes/controller-manager-XXXX.conf
+```
 
+
+</p>
 
 ### Something is wrong with scaling again. We just tried scaling the deployment to 3 replicas. But it's not happening. Investigate and fix the issue
 Fix Issue
 Wait for deployment to actually scale
 
+<p>
 
+```bash
 master $ k get po
 NAME                  READY   STATUS    RESTARTS   AGE
 app-f54ccc97b-5clrr   1/1     Running   0          14m
@@ -346,12 +396,18 @@ unable to load client CA file: unable to load client CA file: open /etc/kubernet
       path: /usr/share/ca-certificates
       type: DirectoryOrCreate
     name: usr-share-ca-certificates
+```
+
+</p>
 
 ## Worker Node Failure
 
 ### Fix the broken cluster
 Fix node01
 
+<p>
+
+```bash
 master $ k get nodes
 NAME     STATUS     ROLES    AGE    VERSION
 master   Ready      master   115s   v1.16.0
@@ -377,10 +433,16 @@ master $ k get nodes
 NAME     STATUS   ROLES    AGE     VERSION
 master   Ready    master   2m57s   v1.16.0
 node01   Ready    <none>   2m25s   v1.16.0
+```
 
+</p>
 
 ### The cluster is broken again. Investigate and fix the issue.
 
+<p>
+
+
+```bash
 master $ k get nodes
 NAME     STATUS     ROLES    AGE     VERSION
 master   Ready      master   4m11s   v1.16.0
@@ -428,13 +490,18 @@ authorization:
     cacheUnauthorizedTTL: 30s
 cgroupDriver: cgroupfs
 cgroupsPerQOS: true
+```
 
+</p>
 
 
 ### The cluster is broken again. Investigate and fix the issue.
 Fix Cluster
 
+<p>
 
+
+```bash
 master $ k get nodes
 NAME     STATUS     ROLES    AGE   VERSION
 master   Ready      master   29m   v1.16.0
@@ -466,3 +533,6 @@ master $ k get nodes
 NAME     STATUS   ROLES    AGE   VERSION
 master   Ready    master   34m   v1.16.0
 node01   Ready    <none>   33m   v1.16.0
+```
+
+</p>

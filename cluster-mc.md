@@ -2,90 +2,160 @@
 
 ### We need to take node01 out for maintenance. Empty the node of all applications and mark it unschedulable.
 
-Node node01 Unschedulable
-Pods evicted from node01
+Node node01 Unschedulable   
+Pods evicted from node01   
 
-kubectl drain node01 --ignore-daemonsets
+<p>
+
+```bash
+$ kubectl drain node01 --ignore-daemonsets
+```
+
+</p>
+
 
 ### The maintenance tasks have been completed. Configure the node to be schedulable again.
-Node01 is Schedulable
+Node01 is Schedulable   
 
- kubectl uncordon node01 (--force)
+<p>
+
+```bash
+$ kubectl uncordon node01 (--force)
+```
+
+</p>
+
+### Node03 has our critical applications. We do not want to schedule any more apps on node03. Mark node03 as unschedulable but do not remove any apps currently running on it .
  
- ### Node03 has our critical applications. We do not want to schedule any more apps on node03. Mark node03 as unschedulable but do not remove any apps currently running on it .
- 
- Node03 Unschedulable
-Node03 has apps
+Node03 Unschedulable    
+Node03 has apps   
 
-kubectl cordon node03
+<p>
 
+```bash
+$ kubectl cordon node03
+```
+
+</p>
+
+</br>
+</br>
+</br>
 
 ## Upgrade
-
 ### What is the latest stable version available for upgrade?
 
- kubeadm upgrade plan
+<p>
+
+```bash
+kubeadm upgrade plan
+```
+
+</p>
+
+
+### We will be upgrading the master node first. Drain the master node of workloads and mark it UnSchedulable
  
- ### We will be upgrading the master node first. Drain the master node of workloads and mark it UnSchedulable
- 
- Master Node: SchedulingDisabled
- 
- kubectl drain master --ignore-daemonsets
- 
+Master Node: SchedulingDisabled
+
+<p>
+
+```bash 
+kubectl drain master --ignore-daemonsets
+```
+
+</p>
  
  ### Upgrade the master components to v1.12.0. Upgrade kubeadm tool, then master components, and finally the kubelet. Practice referring to the kubernetes documentation page. Note: While upgrading kubelet, if you hit dependency issue while running the apt-get upgrade kubelet command, use the apt install kubelet=1.12.0-00 command instead
  
- Master Upgraded to v1.12.0
-Master Kubelet Upgraded to v1.12.0
+Master Upgraded to v1.12.0   
+Master Kubelet Upgraded to v1.12.0   
 
-Run the command 
-apt install kubeadm=1.12.0-00
-kubeadm upgrade apply v1.12.0
-apt install kubelet=1.12.0-00
+<p>
+
+```bash
+$ Run the command    
+$ apt install kubeadm=1.12.0-00    
+$ kubeadm upgrade apply v1.12.0    
+$ apt install kubelet=1.12.0-00    
+```
+
+</p>
+
 
 ### Mark the master node as "Schedulable" again
 
-Master Node: Ready & Schedulable
-kubectl uncordon master
+Master Node: Ready & Schedulable    
+<p>
 
+```bash
+$ kubectl uncordon master
+```
+
+</p>
 
 ### Next is the worker node. Drain the worker node of the workloads and mark it UnSchedulable
 Worker node: Unschedulable
 
-kubectl drain node01 --ignore-daemonsets
+<p>
+
+```bash
+$ kubectl drain node01 --ignore-daemonsets
+```
+
+</p>
 
 
 ### Upgrade the worker node to v1.12.0
 
-ssh node01
-apt install kubeadm=1.12.0-00
-apt install kubelet=1.12.0-00
+<p>
 
-kubeadm upgrade node config --kubelet-version $(kubelet --version | cut -d ' ' -f 2)
+```bash
+$ ssh node01
+$ apt install kubeadm=1.12.0-00
+$ apt install kubelet=1.12.0-00
+
+$ kubeadm upgrade node config --kubelet-version $(kubelet --version | cut -d ' ' -f 2)
+```
+
+</p>
 
 
 ### Remove the restriction and mark the worker node as schedulable again.
 Worker Node: Schedulable
 
-kubectl uncordon node01
+<p>
 
+```bash
+$ kubectl uncordon node01
+```
+
+</p>
+</br>   
+</br>
+</br>
 
 ## Backup  
-
 ### The master nodes in our cluster are planned for a regular maintenance reboot tonight. While we do not anticipate anything to go wrong, we are required to take the necessary backups. Take a snapshot of the ETCD database using the built-in snapshot functionality.
-Store the backup file at location /tmp/snapshot-pre-boot.db
+Store the backup file at location /tmp/snapshot-pre-boot.db    
+Backup ETCD to /tmp/snapshot-pre-boot.db    
+Name: ingress-space    
 
-Backup ETCD to /tmp/snapshot-pre-boot.db
-Name: ingress-space
+<p>
 
-master $ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /tmp/snapshot-pre-boot.db
+```bash
+$ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key snapshot save /tmp/snapshot-pre-boot.db
 Snapshot saved at /tmp/snapshot-pre-boot.db
+```
 
+</p>
 
 ### Luckily we took a backup. Restore the original state of the cluster using the backup file.
  
+<p>
 
-ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+```bash
+$ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
      --name=master \
      --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
      --data-dir /var/lib/etcd-from-backup \
@@ -125,3 +195,6 @@ Update volumes and volume mounts to point to new path
       path: /etc/kubernetes/pki/etcd
       type: DirectoryOrCreate
     name: etcd-certs
+```
+
+</p>
